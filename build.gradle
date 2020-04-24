@@ -1,9 +1,24 @@
 group 'com.tesults'
 version '1.0.2'
 
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2"
+    }
+}
+
 apply plugin : "java"
 apply plugin : "java-library"
 apply plugin: "io.spring.dependency-management"
+apply plugin: "com.jfrog.bintray"
+apply plugin: "maven-publish"
 
 sourceCompatibility = 1.8
 
