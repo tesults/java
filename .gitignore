@@ -1,0 +1,4 @@
+/build
+/.gradle
+.idea/
+/private-build.gradle
