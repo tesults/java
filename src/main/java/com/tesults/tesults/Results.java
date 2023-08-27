@@ -58,7 +58,7 @@ public class Results {
         try {
             jsonData = new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException ex) {
-            return refreshCredentialsError(false, "Incorrect data format.");
+            return refreshCredentialsError(false, "Incorrect data format (1).");
         }
 
         URL url;
@@ -283,7 +283,7 @@ public class Results {
         try {
             jsonData = new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException ex) {
-            return uploadResult(false, "Incorrect data format.", warnings);
+            return uploadResult(false, "Incorrect data format (2).", warnings);
         }
 
         URL url;
