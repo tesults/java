@@ -1,36 +1,16 @@
 group 'com.tesults'
 version '1.0.3'
 
-buildscript {
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "io.spring.gradle:dependency-management-plugin:1.0.3.RELEASE"
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.2"
-    }
-}
-
 apply plugin : "java"
 apply plugin : "java-library"
-apply plugin: "io.spring.dependency-management"
-apply plugin: "com.jfrog.bintray"
 apply plugin: "maven-publish"
+apply plugin: "signing"
 
 sourceCompatibility = 1.8
 
 repositories {
-    jcenter()
     mavenCentral()
-}
-
-dependencyManagement {
-    imports {
-        mavenBom 'com.amazonaws:aws-java-sdk-bom:1.11.228'
-    }
+    jcenter()
 }
 
 dependencies {
@@ -42,48 +22,60 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
     implementation 'org.json:json:20171018'
     implementation 'commons-io:commons-io:2.6'
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.228')
 }
 
-jar {
-    manifest {
-        attributes('Implementation-Title': project.name,
-                'Implementation-Version': project.version)
-    }
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'tesults'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'tesults'
+                description = 'Tesults Java API Library'
+                url = 'https://www.tesults.com'
+                licenses {
+                    license {
+                        name = "MIT"
+                        url = "https://opensource.org/licenses/MIT"
+                        distribution = "repo"
+                    }
+                }
+                developers {
+                    developer {
+                        id = "ajeetd"
+                        name = "Ajeet Dhaliwal"
+                        email = "help@tesults.com"
+                    }
+                }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-// Create the pom configuration:
-def pomConfig = {
-    licenses {
-        license {
-            name "MIT"
-            url "https://opensource.org/licenses/MIT"
-            distribution "repo"
+                scm {
+                    url = "https://github.com/tesults/java.git"
+                }
+            }
         }
     }
-    developers {
-        developer {
-            id "ajeetd"
-            name "Ajeet Dhaliwal"
-            email "help@tesults.com"
-        }
-    }
+}
 
-    scm {
-        url "https://github.com/tesults/java.git"
+signing {
+    sign publishing.publications.mavenJava
+}
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }
